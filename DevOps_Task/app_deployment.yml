@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: demo-ops
+  labels:
+    app: counter
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: counter
+  template:
+    metadata:
+      labels:
+        app: counter
+    spec:
+      containers:
+      - name: counter
+        image: redistask_app # Reading from local docker images
+        imagePullPolicy: Never
+        command: ["/go/app/app/demo.bin"]
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            memory: "200Mi"
+            ephemeral-storage: "2Gi"
+          requests:
+            memory: "100Mi"
+            cpu: "0.5"
+            ephemeral-storage: "1Gi"
+        env:                   
+          - name: DEMO_REDIS_ADDR
+            value: redis:6379
+        readinessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20

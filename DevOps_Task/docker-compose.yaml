@@ -1,0 +1,16 @@
+version: '2.2'
+services:
+  app:
+    build: .
+    ports:
+    - "8000:8000"
+    volumes:
+    - .:/code
+    links:
+    - redis
+    environment:
+      DEMO_REDIS_ADDR: "redis:6379"
+  redis:
+    image: "redis:alpine"
+    volumes:
+    - .:/data
